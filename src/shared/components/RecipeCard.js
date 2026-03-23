@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RecipeCard.css';
 
@@ -6,16 +7,24 @@ const DIFFICULTY_LABEL = ['', '쉬움', '보통', '어려움'];
 
 function RecipeCard({ recipe }) {
   const navigate = useNavigate();
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="recipe-card" onClick={() => navigate(`/recipes/${recipe.id}`)}>
       <div className="recipe-card-img-wrap">
-        <img
-          src={recipe.imageUrl}
-          alt={recipe.title}
-          className="recipe-card-img"
-          loading="lazy"
-        />
+        {imgError ? (
+          <div className="recipe-card-img-fallback">
+            <span>{recipe.title?.charAt(0) || '🍽'}</span>
+          </div>
+        ) : (
+          <img
+            src={recipe.imageUrl}
+            alt={recipe.title}
+            className="recipe-card-img"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        )}
         {recipe.spicyLevel > 0 && (
           <span className="recipe-card-spicy">
             {'🌶️'.repeat(Math.min(recipe.spicyLevel, 3))}
