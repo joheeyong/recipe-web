@@ -1,9 +1,194 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import recipeApi from '../../home/api/recipeApi';
+import apiClient from '../../../core/api/apiClient';
 import './RecipeDetailPage.css';
 
 const DIFFICULTY_LABEL = ['', '쉬움', '보통', '어려움'];
+
+function StarRating({ value, onChange, readonly }) {
+  return (
+    <div className="star-rating">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          className={`star-btn ${star <= value ? 'filled' : ''}`}
+          onClick={() => !readonly && onChange?.(star)}
+          disabled={readonly}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ReviewSection({ recipeId }) {
+  const { user } = useSelector((state) => state.auth);
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
+  const loadReviews = useCallback(() => {
+    apiClient.get(`/api/recipes/${recipeId}/reviews`)
+      .then((data) => {
+        setReviews(data.reviews || []);
+        setAvgRating(data.avgRating || 0);
+        setReviewCount(data.reviewCount || 0);
+        // 내 리뷰가 있으면 세팅
+        if (user) {
+          const mine = (data.reviews || []).find((r) => r.userId === user.id);
+          if (mine) {
+            setMyRating(mine.rating);
+            setMyComment(mine.comment || '');
+          }
+        }
+      })
+      .catch(() => {});
+  }, [recipeId, user]);
+
+  useEffect(() => { loadReviews(); }, [loadReviews]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!myRating) return;
+    setSubmitting(true);
+    apiClient.post(`/api/recipes/${recipeId}/reviews`, {
+      rating: myRating,
+      comment: myComment.trim(),
+    })
+      .then(() => {
+        setEditMode(false);
+        loadReviews();
+      })
+      .catch(() => {})
+      .finally(() => setSubmitting(false));
+  };
+
+  const handleDelete = (reviewId) => {
+    if (!window.confirm('리뷰를 삭제하시겠습니까?')) return;
+    apiClient.del(`/api/recipes/${recipeId}/reviews/${reviewId}`)
+      .then(() => {
+        setMyRating(0);
+        setMyComment('');
+        loadReviews();
+      })
+      .catch(() => {});
+  };
+
+  const myReview = user ? reviews.find((r) => r.userId === user.id) : null;
+
+  return (
+    <section className="detail-section">
+      <div className="review-header">
+        <h2 className="detail-section-title">후기</h2>
+        <div className="review-summary">
+          <span className="review-avg-star">★ {avgRating}</span>
+          <span className="review-count">({reviewCount}개)</span>
+        </div>
+      </div>
+
+      {/* 리뷰 작성 폼 */}
+      {user && (!myReview || editMode) && (
+        <form className="review-form" onSubmit={handleSubmit}>
+          <div className="review-form-rating">
+            <span className="review-form-label">별점</span>
+            <StarRating value={myRating} onChange={setMyRating} />
+          </div>
+          <textarea
+            className="review-textarea"
+            placeholder="후기를 작성해주세요 (선택)"
+            value={myComment}
+            onChange={(e) => setMyComment(e.target.value)}
+            rows={3}
+          />
+          <div className="review-form-actions">
+            {editMode && (
+              <button type="button" className="review-cancel-btn" onClick={() => setEditMode(false)}>
+                취소
+              </button>
+            )}
+            <button type="submit" className="review-submit-btn" disabled={!myRating || submitting}>
+              {submitting ? '저장 중...' : myReview ? '수정하기' : '등록하기'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* 내 리뷰 (작성 완료 상태) */}
+      {user && myReview && !editMode && (
+        <div className="review-item my-review">
+          <div className="review-item-header">
+            <div className="review-user">
+              {myReview.userProfileImage ? (
+                <img src={myReview.userProfileImage} alt="" className="review-avatar" />
+              ) : (
+                <div className="review-avatar-fallback">{(myReview.userName || '나').charAt(0)}</div>
+              )}
+              <div>
+                <div className="review-user-name">{myReview.userName || '나'} <span className="review-mine-badge">내 후기</span></div>
+                <StarRating value={myReview.rating} readonly />
+              </div>
+            </div>
+            <div className="review-actions">
+              <button className="review-edit-btn" onClick={() => setEditMode(true)}>수정</button>
+              <button className="review-delete-btn" onClick={() => handleDelete(myReview.id)}>삭제</button>
+            </div>
+          </div>
+          {myReview.comment && <p className="review-comment">{myReview.comment}</p>}
+          <span className="review-date">{formatDate(myReview.createdAt)}</span>
+        </div>
+      )}
+
+      {/* 다른 사람 리뷰 목록 */}
+      {reviews.filter((r) => !user || r.userId !== user.id).map((review) => (
+        <div key={review.id} className="review-item">
+          <div className="review-item-header">
+            <div className="review-user">
+              {review.userProfileImage ? (
+                <img src={review.userProfileImage} alt="" className="review-avatar" />
+              ) : (
+                <div className="review-avatar-fallback">{(review.userName || '?').charAt(0)}</div>
+              )}
+              <div>
+                <div className="review-user-name">{review.userName || '익명'}</div>
+                <StarRating value={review.rating} readonly />
+              </div>
+            </div>
+          </div>
+          {review.comment && <p className="review-comment">{review.comment}</p>}
+          <span className="review-date">{formatDate(review.createdAt)}</span>
+        </div>
+      ))}
+
+      {reviews.length === 0 && (
+        <p className="review-empty">아직 후기가 없습니다. 첫 후기를 남겨보세요!</p>
+      )}
+
+      {!user && (
+        <p className="review-login-hint">후기를 작성하려면 로그인해주세요</p>
+      )}
+    </section>
+  );
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '방금 전';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}분 전`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간 전`;
+  if (diff < 604800000) return `${Math.floor(diff / 86400000)}일 전`;
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+}
 
 function RecipeDetailPage() {
   const { id } = useParams();
@@ -130,6 +315,8 @@ function RecipeDetailPage() {
             </ol>
           </section>
         )}
+
+        <ReviewSection recipeId={recipe.id} />
       </div>
     </div>
   );

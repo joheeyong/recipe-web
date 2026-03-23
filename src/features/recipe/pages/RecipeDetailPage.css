@@ -267,3 +267,270 @@
   margin-left: 4px;
   text-decoration: line-through;
 }
+
+/* ===== 후기 섹션 ===== */
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.review-header .detail-section-title {
+  margin-bottom: 0;
+}
+
+.review-summary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-avg-star {
+  color: #f5a623;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.review-count {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+/* 별점 */
+.star-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--border);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.star-btn.filled {
+  color: #f5a623;
+}
+
+.star-btn:disabled {
+  cursor: default;
+}
+
+.star-btn:not(:disabled):hover {
+  color: #f5a623;
+}
+
+/* 리뷰 작성 폼 */
+.review-form {
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.review-form-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.review-form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.review-form .star-btn {
+  font-size: 1.6rem;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.review-textarea:focus {
+  border-color: var(--accent);
+}
+
+.review-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.review-submit-btn {
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.review-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.review-cancel-btn {
+  padding: 8px 16px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* 리뷰 아이템 */
+.review-item {
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.review-item.my-review {
+  border: 1.5px solid var(--accent-light);
+}
+
+.review-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.review-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-avatar-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.review-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.review-mine-badge {
+  font-size: 0.65rem;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+.review-user .star-rating .star-btn {
+  font-size: 0.85rem;
+}
+
+.review-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.review-edit-btn,
+.review-delete-btn {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.review-edit-btn {
+  color: var(--accent);
+}
+
+.review-delete-btn {
+  color: var(--text-tertiary);
+}
+
+.review-edit-btn:hover,
+.review-delete-btn:hover {
+  background: var(--bg-primary);
+}
+
+.review-comment {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.review-date {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.review-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+}
+
+.review-login-hint {
+  text-align: center;
+  padding: 12px;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+}
