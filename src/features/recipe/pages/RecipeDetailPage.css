@@ -38,12 +38,39 @@
   margin: 0 auto;
 }
 
+.detail-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .detail-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 6px;
   line-height: 1.3;
+  flex: 1;
+}
+
+.detail-bookmark-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.68rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.detail-bookmark-btn.active {
+  color: var(--accent);
 }
 
 .detail-desc {

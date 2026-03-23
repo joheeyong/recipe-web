@@ -245,6 +245,37 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 
+function BookmarkButton({ recipeId }) {
+  const { user } = useSelector((state) => state.auth);
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    apiClient.get(`/api/bookmarks/${recipeId}/check`)
+      .then((data) => setBookmarked(data.bookmarked))
+      .catch(() => {});
+  }, [recipeId, user]);
+
+  const toggle = () => {
+    if (!user) return;
+    const req = bookmarked
+      ? apiClient.del(`/api/bookmarks/${recipeId}`)
+      : apiClient.post(`/api/bookmarks/${recipeId}`);
+    req.then((data) => setBookmarked(data.bookmarked)).catch(() => {});
+  };
+
+  if (!user) return null;
+
+  return (
+    <button className={`detail-bookmark-btn ${bookmarked ? 'active' : ''}`} onClick={toggle}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill={bookmarked ? 'var(--accent)' : 'none'} stroke={bookmarked ? 'var(--accent)' : 'currentColor'} strokeWidth="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+      </svg>
+      <span>{bookmarked ? '저장됨' : '저장'}</span>
+    </button>
+  );
+}
+
 function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -289,7 +320,10 @@ function RecipeDetailPage() {
       </div>
 
       <div className="detail-content">
-        <h1 className="detail-title">{recipe.title}</h1>
+        <div className="detail-title-row">
+          <h1 className="detail-title">{recipe.title}</h1>
+          <BookmarkButton recipeId={recipe.id} />
+        </div>
         <p className="detail-desc">{recipe.description}</p>
 
         {tasteAdjusted && adjustmentNotes && adjustmentNotes.length > 0 && (
