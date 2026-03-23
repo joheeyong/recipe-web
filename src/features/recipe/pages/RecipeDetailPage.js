@@ -180,7 +180,9 @@ function ReviewSection({ recipeId }) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  const d = new Date(dateStr);
+  // 서버가 KST(Asia/Seoul)인데 타임존 없이 보내므로 +09:00 붙여서 파싱
+  const raw = dateStr.includes('+') || dateStr.includes('Z') ? dateStr : dateStr + '+09:00';
+  const d = new Date(raw);
   const now = new Date();
   const diff = now - d;
   if (diff < 60000) return '방금 전';
