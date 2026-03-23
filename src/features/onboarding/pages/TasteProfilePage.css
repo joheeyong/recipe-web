@@ -115,6 +115,50 @@
   color: var(--text-tertiary);
 }
 
+/* 음식 카테고리 */
+.taste-category-section {
+  margin-bottom: 8px;
+}
+
+.taste-category-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.taste-category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.taste-category-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.taste-category-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.taste-category-icon {
+  font-size: 1.1rem;
+}
+
 .taste-divider {
   height: 1px;
   background: var(--border);

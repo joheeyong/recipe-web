@@ -13,6 +13,19 @@ const TASTE_ITEMS = [
   { key: 'oilinessLevel', label: '기름기', icon: '🫒', low: '담백하게', high: '기름지게' },
 ];
 
+const CUISINE_OPTIONS = [
+  { key: 'korean', label: '한식', icon: '🍚' },
+  { key: 'western', label: '양식', icon: '🍝' },
+  { key: 'chinese', label: '중식', icon: '🥟' },
+  { key: 'japanese', label: '일식', icon: '🍱' },
+  { key: 'sashimi', label: '회&초밥', icon: '🍣' },
+  { key: 'dessert', label: '디저트', icon: '🍰' },
+  { key: 'fastfood', label: '패스트푸드', icon: '🍔' },
+  { key: 'southeast_asian', label: '동남아', icon: '🍜' },
+  { key: 'mexican', label: '멕시칸', icon: '🌮' },
+  { key: 'salad', label: '샐러드', icon: '🥗' },
+];
+
 const DEFAULT_PREFS = {
   spicyLevel: 5,
   sweetnessLevel: 5,
@@ -20,12 +33,14 @@ const DEFAULT_PREFS = {
   sournessLevel: 5,
   umamiLevel: 5,
   oilinessLevel: 5,
+  preferredCuisines: '',
 };
 
 function TasteProfilePage() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [prefs, setPrefs] = useState(DEFAULT_PREFS);
+  const [selectedCuisines, setSelectedCuisines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
@@ -44,7 +59,11 @@ function TasteProfilePage() {
           sournessLevel: data.sournessLevel ?? 5,
           umamiLevel: data.umamiLevel ?? 5,
           oilinessLevel: data.oilinessLevel ?? 5,
+          preferredCuisines: data.preferredCuisines || '',
         });
+        if (data.preferredCuisines) {
+          setSelectedCuisines(data.preferredCuisines.split(',').filter(Boolean));
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -54,9 +73,16 @@ function TasteProfilePage() {
     setPrefs((prev) => ({ ...prev, [key]: Number(value) }));
   };
 
+  const toggleCuisine = (key) => {
+    setSelectedCuisines((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+    );
+  };
+
   const handleSave = () => {
     setSaving(true);
-    apiClient.put('/api/preferences', prefs)
+    const payload = { ...prefs, preferredCuisines: selectedCuisines.join(',') };
+    apiClient.put('/api/preferences', payload)
       .then(() => {
         setToast('저장되었습니다');
         setTimeout(() => navigate('/profile'), 1000);
@@ -88,6 +114,27 @@ function TasteProfilePage() {
       </div>
       <p className="taste-subtitle">나의 맛 선호도를 설정하면 맞춤 레시피를 추천해드려요</p>
 
+      {/* 좋아하는 음식 카테고리 */}
+      <div className="taste-category-section">
+        <div className="taste-category-title">좋아하는 음식 카테고리</div>
+        <div className="taste-category-grid">
+          {CUISINE_OPTIONS.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              className={`taste-category-chip ${selectedCuisines.includes(c.key) ? 'active' : ''}`}
+              onClick={() => toggleCuisine(c.key)}
+            >
+              <span className="taste-category-icon">{c.icon}</span>
+              <span>{c.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="taste-divider" />
+
+      {/* 맛 슬라이더 */}
       {TASTE_ITEMS.map((item) => (
         <div key={item.key} className="taste-section">
           <div className="taste-label">
