@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { googleLogin, naverLogin, kakaoLogin } from '../slice/authSlice';
@@ -35,8 +35,12 @@ function OAuthCallbackPage({ provider }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const config = PROVIDER_CONFIG[provider];
+  const processed = useRef(false);
 
   useEffect(() => {
+    if (processed.current) return;
+    processed.current = true;
+
     if (!config) {
       navigate('/login');
       return;
@@ -54,11 +58,15 @@ function OAuthCallbackPage({ provider }) {
         .then(() => {
           navigate('/profile');
         })
-        .catch(() => navigate('/login'));
+        .catch((err) => {
+          console.error('Login failed:', err);
+          navigate('/login');
+        });
     } else {
+      console.error('State mismatch', { code: !!code, state, savedState });
       navigate('/login');
     }
-  }, [dispatch, navigate, searchParams, config]);
+  }, []);
 
   if (!config) return null;
 
