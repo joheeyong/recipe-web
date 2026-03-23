@@ -89,13 +89,6 @@ function LoginPage() {
             Google로 계속하기
           </button>
 
-          <button className="login-btn kakao-btn" onClick={handleKakaoLogin}>
-            <svg className="login-btn-icon" viewBox="0 0 24 24">
-              <path d="M12 3C6.48 3 2 6.36 2 10.44c0 2.62 1.75 4.93 4.38 6.24l-1.12 4.16c-.1.36.3.65.6.44l4.97-3.3c.38.04.77.06 1.17.06 5.52 0 10-3.36 10-7.6C22 6.36 17.52 3 12 3z" fill="#3C1E1E"/>
-            </svg>
-            카카오로 계속하기
-          </button>
-
           <button className="login-btn naver-btn" onClick={handleNaverLogin}>
             <svg className="login-btn-icon" viewBox="0 0 24 24">
               <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z" fill="#fff"/>
