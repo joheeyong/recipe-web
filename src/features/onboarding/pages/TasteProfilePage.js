@@ -59,7 +59,7 @@ function TasteProfilePage() {
     apiClient.put('/api/preferences', prefs)
       .then(() => {
         setToast('저장되었습니다');
-        setTimeout(() => setToast(''), 2000);
+        setTimeout(() => navigate('/profile'), 1000);
       })
       .catch(() => {
         setToast('저장에 실패했습니다');
