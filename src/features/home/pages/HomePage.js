@@ -4,24 +4,32 @@ import RecipeCard from '../../../shared/components/RecipeCard';
 import './HomePage.css';
 
 const CATEGORIES = [
-  { key: null, label: '전체' },
-  { key: 'main', label: '메인' },
-  { key: 'soup', label: '국/탕' },
-  { key: 'side', label: '반찬' },
+  { key: null, label: '전체', userRecipe: null },
+  { key: 'main', label: '메인', userRecipe: null },
+  { key: 'soup', label: '국/탕', userRecipe: null },
+  { key: 'side', label: '반찬', userRecipe: null },
+  { key: 'custom', label: '커스텀', userRecipe: true },
 ];
 
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    recipeApi.list({ category: activeCategory, size: 30 })
+    const cat = CATEGORIES.find((c) => (c.key || 'all') === activeFilter);
+    const params = { size: 30 };
+    if (cat && cat.userRecipe) {
+      params.userRecipe = true;
+    } else if (cat && cat.key) {
+      params.category = cat.key;
+    }
+    recipeApi.list(params)
       .then((data) => setRecipes(data.content || []))
       .catch(() => setRecipes([]))
       .finally(() => setLoading(false));
-  }, [activeCategory]);
+  }, [activeFilter]);
 
   return (
     <div className="home-page">
@@ -34,8 +42,8 @@ function HomePage() {
         {CATEGORIES.map((cat) => (
           <button
             key={cat.key || 'all'}
-            className={`category-chip ${activeCategory === cat.key ? 'active' : ''}`}
-            onClick={() => setActiveCategory(cat.key)}
+            className={`category-chip ${activeFilter === (cat.key || 'all') ? 'active' : ''}`}
+            onClick={() => setActiveFilter(cat.key || 'all')}
           >
             {cat.label}
           </button>
