@@ -35,7 +35,7 @@ function RecipeDetailPage() {
     );
   }
 
-  const { recipe, ingredients, steps } = data;
+  const { recipe, ingredients, steps, adjustmentNotes, tasteAdjusted } = data;
 
   return (
     <div className="detail-page">
@@ -51,6 +51,15 @@ function RecipeDetailPage() {
       <div className="detail-content">
         <h1 className="detail-title">{recipe.title}</h1>
         <p className="detail-desc">{recipe.description}</p>
+
+        {tasteAdjusted && adjustmentNotes && adjustmentNotes.length > 0 && (
+          <div className="detail-adjustment">
+            <div className="detail-adjustment-title">나의 입맛에 맞게 조정됨</div>
+            {adjustmentNotes.map((note, i) => (
+              <div key={i} className="detail-adjustment-note">{note}</div>
+            ))}
+          </div>
+        )}
 
         <div className="detail-meta">
           {recipe.cookTimeMinutes > 0 && (
@@ -88,12 +97,18 @@ function RecipeDetailPage() {
             <h2 className="detail-section-title">재료</h2>
             <ul className="detail-ingredients">
               {ingredients.map((ing) => (
-                <li key={ing.id} className={`detail-ingredient ${ing.optional ? 'optional' : ''}`}>
+                <li key={ing.id} className={`detail-ingredient ${ing.optional ? 'optional' : ''} ${ing.adjusted ? 'adjusted' : ''}`}>
                   <span className="ingredient-name">
                     {ing.name}
                     {ing.optional && <span className="ingredient-optional">선택</span>}
+                    {ing.adjusted && <span className="ingredient-adjusted-badge">조정됨</span>}
                   </span>
-                  <span className="ingredient-measure">{ing.amount}</span>
+                  <span className="ingredient-measure">
+                    {ing.amount}
+                    {ing.adjusted && ing.originalAmount && (
+                      <span className="ingredient-original">(원래 {ing.originalAmount})</span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>

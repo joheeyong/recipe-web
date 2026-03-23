@@ -227,3 +227,43 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.detail-adjustment {
+  background: var(--accent-light);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.detail-adjustment-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.detail-adjustment-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.detail-ingredient.adjusted {
+  background: rgba(255, 107, 53, 0.05);
+}
+
+.ingredient-adjusted-badge {
+  font-size: 0.6rem;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.ingredient-original {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  margin-left: 4px;
+  text-decoration: line-through;
+}
