@@ -1,18 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import mealApi from '../../home/api/mealApi';
+import recipeApi from '../../home/api/recipeApi';
 import './RecipeDetailPage.css';
+
+const DIFFICULTY_LABEL = ['', '쉬움', '보통', '어려움'];
 
 function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [meal, setMeal] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    mealApi.getDetail(id)
-      .then((data) => setMeal(data))
-      .catch(() => setMeal(null))
+    recipeApi.detail(id)
+      .then((res) => setData(res))
+      .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -24,32 +26,21 @@ function RecipeDetailPage() {
     );
   }
 
-  if (!meal) {
+  if (!data || !data.recipe) {
     return (
       <div className="detail-loading">
-        <p>Recipe not found</p>
-        <button className="detail-back-btn" onClick={() => navigate('/')}>Go Home</button>
+        <p>레시피를 찾을 수 없습니다</p>
+        <button className="detail-back-btn" onClick={() => navigate('/')}>홈으로</button>
       </div>
     );
   }
 
-  const ingredients = [];
-  for (let i = 1; i <= 20; i++) {
-    const ing = meal[`strIngredient${i}`];
-    const measure = meal[`strMeasure${i}`];
-    if (ing && ing.trim()) {
-      ingredients.push({ name: ing.trim(), measure: measure?.trim() || '' });
-    }
-  }
-
-  const steps = meal.strInstructions
-    ? meal.strInstructions.split(/\r?\n/).filter((s) => s.trim())
-    : [];
+  const { recipe, ingredients, steps } = data;
 
   return (
     <div className="detail-page">
       <div className="detail-hero">
-        <img src={meal.strMealThumb} alt={meal.strMeal} className="detail-hero-img" />
+        <img src={recipe.imageUrl} alt={recipe.title} className="detail-hero-img" />
         <button className="detail-back" onClick={() => navigate(-1)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -58,48 +49,70 @@ function RecipeDetailPage() {
       </div>
 
       <div className="detail-content">
-        <h1 className="detail-title">{meal.strMeal}</h1>
+        <h1 className="detail-title">{recipe.title}</h1>
+        <p className="detail-desc">{recipe.description}</p>
 
         <div className="detail-meta">
-          {meal.strArea && <span className="detail-tag">{meal.strArea}</span>}
-          {meal.strCategory && <span className="detail-tag">{meal.strCategory}</span>}
-          {meal.strTags && meal.strTags.split(',').map((tag) => (
-            <span key={tag} className="detail-tag">{tag.trim()}</span>
-          ))}
+          {recipe.cookTimeMinutes > 0 && (
+            <div className="detail-meta-item">
+              <span className="detail-meta-label">조리시간</span>
+              <span className="detail-meta-value">{recipe.cookTimeMinutes}분</span>
+            </div>
+          )}
+          <div className="detail-meta-item">
+            <span className="detail-meta-label">난이도</span>
+            <span className="detail-meta-value">{DIFFICULTY_LABEL[recipe.difficulty]}</span>
+          </div>
+          <div className="detail-meta-item">
+            <span className="detail-meta-label">인분</span>
+            <span className="detail-meta-value">{recipe.servingSize}인분</span>
+          </div>
+          {recipe.calories > 0 && (
+            <div className="detail-meta-item">
+              <span className="detail-meta-label">칼로리</span>
+              <span className="detail-meta-value">{recipe.calories}kcal</span>
+            </div>
+          )}
         </div>
 
-        <section className="detail-section">
-          <h2 className="detail-section-title">Ingredients</h2>
-          <ul className="detail-ingredients">
-            {ingredients.map((ing, i) => (
-              <li key={i} className="detail-ingredient">
-                <span className="ingredient-name">{ing.name}</span>
-                <span className="ingredient-measure">{ing.measure}</span>
-              </li>
+        {recipe.tags && (
+          <div className="detail-tags">
+            {recipe.tags.split(',').map((tag) => (
+              <span key={tag} className="detail-tag">{tag.trim()}</span>
             ))}
-          </ul>
-        </section>
+          </div>
+        )}
 
-        <section className="detail-section">
-          <h2 className="detail-section-title">Instructions</h2>
-          <ol className="detail-steps">
-            {steps.map((step, i) => (
-              <li key={i} className="detail-step">{step}</li>
-            ))}
-          </ol>
-        </section>
-
-        {meal.strYoutube && (
+        {ingredients && ingredients.length > 0 && (
           <section className="detail-section">
-            <h2 className="detail-section-title">Video</h2>
-            <a
-              href={meal.strYoutube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="detail-youtube-link"
-            >
-              Watch on YouTube
-            </a>
+            <h2 className="detail-section-title">재료</h2>
+            <ul className="detail-ingredients">
+              {ingredients.map((ing) => (
+                <li key={ing.id} className={`detail-ingredient ${ing.optional ? 'optional' : ''}`}>
+                  <span className="ingredient-name">
+                    {ing.name}
+                    {ing.optional && <span className="ingredient-optional">선택</span>}
+                  </span>
+                  <span className="ingredient-measure">{ing.amount}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {steps && steps.length > 0 && (
+          <section className="detail-section">
+            <h2 className="detail-section-title">만드는 법</h2>
+            <ol className="detail-steps">
+              {steps.map((step) => (
+                <li key={step.id} className="detail-step">
+                  <div className="step-instruction">{step.instruction}</div>
+                  {step.tip && (
+                    <div className="step-tip">💡 {step.tip}</div>
+                  )}
+                </li>
+              ))}
+            </ol>
           </section>
         )}
       </div>

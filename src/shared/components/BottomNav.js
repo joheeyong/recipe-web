@@ -11,27 +11,27 @@ function BottomNav() {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
         </svg>
-        <span>Home</span>
+        <span>홈</span>
       </NavLink>
       <NavLink to="/recipes" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span>Search</span>
+        <span>검색</span>
       </NavLink>
       <NavLink to="/bookmarks" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
         </svg>
-        <span>Saved</span>
+        <span>저장</span>
       </NavLink>
       <NavLink to={user ? '/profile' : '/login'} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
-        <span>{user ? 'Profile' : 'Login'}</span>
+        <span>{user ? '마이' : '로그인'}</span>
       </NavLink>
     </nav>
   );

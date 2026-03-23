@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
-import mealApi from '../api/mealApi';
+import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
 import './HomePage.css';
 
-const CATEGORIES = ['Chicken', 'Beef', 'Seafood', 'Pasta', 'Dessert', 'Vegetarian', 'Pork', 'Starter', 'Breakfast', 'Lamb'];
+const CATEGORIES = [
+  { key: null, label: '전체' },
+  { key: 'main', label: '메인' },
+  { key: 'soup', label: '국/탕' },
+  { key: 'side', label: '반찬' },
+];
 
 function HomePage() {
-  const [meals, setMeals] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('Chicken');
+  const [recipes, setRecipes] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    mealApi.getByCategory(activeCategory)
-      .then((data) => setMeals(data))
-      .catch(() => setMeals([]))
+    recipeApi.list({ category: activeCategory, size: 30 })
+      .then((data) => setRecipes(data.content || []))
+      .catch(() => setRecipes([]))
       .finally(() => setLoading(false));
   }, [activeCategory]);
 
@@ -22,17 +27,17 @@ function HomePage() {
     <div className="home-page">
       <header className="home-header">
         <h1 className="home-title">Recipe</h1>
-        <p className="home-subtitle">What would you like to cook?</p>
+        <p className="home-subtitle">오늘 뭐 해먹지?</p>
       </header>
 
       <div className="category-chips">
         {CATEGORIES.map((cat) => (
           <button
-            key={cat}
-            className={`category-chip ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => setActiveCategory(cat)}
+            key={cat.key || 'all'}
+            className={`category-chip ${activeCategory === cat.key ? 'active' : ''}`}
+            onClick={() => setActiveCategory(cat.key)}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -41,10 +46,14 @@ function HomePage() {
         <div className="home-loading">
           <div className="home-spinner" />
         </div>
+      ) : recipes.length === 0 ? (
+        <div className="home-empty">
+          <p>레시피가 없습니다</p>
+        </div>
       ) : (
         <div className="recipe-grid">
-          {meals.map((meal) => (
-            <RecipeCard key={meal.idMeal} meal={meal} />
+          {recipes.map((recipe) => (
+            <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </div>
       )}
