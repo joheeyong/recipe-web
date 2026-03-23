@@ -1,0 +1,146 @@
+.myrecipe-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 20px 16px 80px;
+}
+
+.myrecipe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.myrecipe-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.myrecipe-add-btn {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.myrecipe-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+.myrecipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.myrecipe-item {
+  display: flex;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+}
+
+.myrecipe-item:active {
+  transform: scale(0.98);
+}
+
+.myrecipe-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.myrecipe-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.myrecipe-thumb-fallback {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.myrecipe-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.myrecipe-item-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.myrecipe-item-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.myrecipe-item-meta {
+  display: flex;
+  gap: 6px;
+}
+
+.myrecipe-item-tag {
+  font-size: 0.68rem;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.myrecipe-delete-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.myrecipe-login-hint {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-tertiary);
+}
+
+.myrecipe-login-hint a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}

@@ -11,6 +11,8 @@ import RecipeListPage from './features/recipe/pages/RecipeListPage';
 import RecipeDetailPage from './features/recipe/pages/RecipeDetailPage';
 import BookmarksPage from './features/bookmark/pages/BookmarksPage';
 import ProfilePage from './features/profile/pages/ProfilePage';
+import MyRecipesPage from './features/myrecipe/pages/MyRecipesPage';
+import MyRecipeWritePage from './features/myrecipe/pages/MyRecipeWritePage';
 import BlogWritePage from './features/blog/pages/BlogWritePage';
 import BlogDetailPage from './features/blog/pages/BlogDetailPage';
 
@@ -25,7 +27,7 @@ function App() {
     }
   }, [dispatch, token, user]);
 
-  const showBottomNav = ['/', '/recipes', '/bookmarks', '/profile', '/login'].includes(location.pathname);
+  const showBottomNav = ['/', '/my-recipes', '/recipes', '/bookmarks', '/profile', '/login'].includes(location.pathname);
 
   return (
     <div className="app">
@@ -36,6 +38,8 @@ function App() {
         <Route path="/auth/kakao/callback" element={<OAuthCallbackPage provider="kakao" />} />
         <Route path="/onboarding" element={<TasteProfilePage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/my-recipes" element={<MyRecipesPage />} />
+        <Route path="/my-recipes/write" element={<MyRecipeWritePage />} />
         <Route path="/recipes" element={<RecipeListPage />} />
         <Route path="/recipes/:id" element={<RecipeDetailPage />} />
         <Route path="/blog/write" element={<BlogWritePage />} />
