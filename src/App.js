@@ -11,6 +11,8 @@ import RecipeListPage from './features/recipe/pages/RecipeListPage';
 import RecipeDetailPage from './features/recipe/pages/RecipeDetailPage';
 import BookmarksPage from './features/bookmark/pages/BookmarksPage';
 import ProfilePage from './features/profile/pages/ProfilePage';
+import BlogWritePage from './features/blog/pages/BlogWritePage';
+import BlogDetailPage from './features/blog/pages/BlogDetailPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -36,6 +38,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/recipes" element={<RecipeListPage />} />
         <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+        <Route path="/blog/write" element={<BlogWritePage />} />
+        <Route path="/blog/:id" element={<BlogDetailPage />} />
         <Route path="/bookmarks" element={<BookmarksPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>

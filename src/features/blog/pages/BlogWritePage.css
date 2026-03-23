@@ -1,0 +1,186 @@
+.blog-write-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 20px 16px 40px;
+}
+
+.blog-write-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.blog-write-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.blog-write-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.blog-write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blog-field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+/* 레시피 선택 */
+.blog-recipe-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.blog-recipe-select:focus {
+  border-color: var(--accent);
+}
+
+/* 미디어 업로드 */
+.blog-media-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.blog-media-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.blog-media-preview {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.blog-media-preview img,
+.blog-media-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-media-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-media-add {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  border: 2px dashed var(--border);
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-size: 0.7rem;
+  gap: 4px;
+  transition: border-color 0.2s;
+}
+
+.blog-media-add:hover {
+  border-color: var(--accent);
+}
+
+.blog-media-add svg {
+  opacity: 0.5;
+}
+
+.blog-media-input {
+  display: none;
+}
+
+/* 본문 입력 */
+.blog-content-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.blog-content-textarea:focus {
+  border-color: var(--accent);
+}
+
+.blog-content-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 등록 버튼 */
+.blog-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.blog-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

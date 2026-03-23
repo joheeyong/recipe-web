@@ -178,6 +178,59 @@ function ReviewSection({ recipeId }) {
   );
 }
 
+function BlogSection({ recipeId, recipeTitle }) {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    apiClient.get(`/api/blog/recipe/${recipeId}`)
+      .then((data) => setPosts(data || []))
+      .catch(() => {});
+  }, [recipeId]);
+
+  return (
+    <section className="detail-section">
+      <div className="blog-list-header">
+        <h2 className="detail-section-title">블로그</h2>
+        <button
+          className="blog-write-link"
+          onClick={() => navigate(`/blog/write?recipeId=${recipeId}`)}
+        >
+          글쓰기
+        </button>
+      </div>
+
+      {posts.length === 0 ? (
+        <p className="review-empty">아직 블로그 글이 없습니다. 첫 글을 작성해보세요!</p>
+      ) : (
+        <div className="blog-list">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="blog-list-item"
+              onClick={() => navigate(`/blog/${post.id}`)}
+            >
+              {post.mediaUrls && post.mediaUrls.length > 0 && (
+                <div className="blog-list-thumb">
+                  <img src={post.mediaUrls[0]} alt="" />
+                  {post.mediaUrls.length > 1 && (
+                    <span className="blog-list-thumb-count">+{post.mediaUrls.length - 1}</span>
+                  )}
+                </div>
+              )}
+              <div className="blog-list-body">
+                <div className="blog-list-user">{post.userName || '익명'}</div>
+                <p className="blog-list-content">{post.content}</p>
+                <span className="blog-list-date">{formatDate(post.createdAt)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return '';
   // 서버가 KST(Asia/Seoul)인데 타임존 없이 보내므로 +09:00 붙여서 파싱
@@ -319,6 +372,8 @@ function RecipeDetailPage() {
         )}
 
         <ReviewSection recipeId={recipe.id} />
+
+        <BlogSection recipeId={recipe.id} recipeTitle={recipe.title} />
       </div>
     </div>
   );

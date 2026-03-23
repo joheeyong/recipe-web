@@ -1,0 +1,154 @@
+.blog-detail-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 20px 16px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.blog-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.blog-detail-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.blog-detail-recipe-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.blog-detail-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.blog-detail-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blog-detail-avatar-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.blog-detail-user-info {
+  flex: 1;
+}
+
+.blog-detail-user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.blog-detail-date {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.blog-detail-delete {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 8px;
+}
+
+/* 미디어 슬라이더 */
+.blog-media-slider {
+  margin: 0 -16px 16px;
+  overflow-x: auto;
+  display: flex;
+  gap: 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.blog-media-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.blog-media-slide {
+  flex-shrink: 0;
+  width: 100%;
+  scroll-snap-align: start;
+}
+
+.blog-media-slide img,
+.blog-media-slide video {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+}
+
+.blog-media-count {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+/* 본문 */
+.blog-detail-content {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.blog-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.blog-detail-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
