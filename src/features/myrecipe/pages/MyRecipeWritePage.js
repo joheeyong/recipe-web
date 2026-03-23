@@ -122,7 +122,7 @@ function MyRecipeWritePage() {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 className="recipe-write-title">레시피 등록</h1>
+        <h1 className="recipe-write-title">유저 레시피 등록</h1>
       </div>
 
       <form className="recipe-write-form" onSubmit={handleSubmit}>
