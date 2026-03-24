@@ -3,11 +3,14 @@ import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
 import './HomePage.css';
 
-const CATEGORIES = [
-  { key: null, label: '전체', userRecipe: null },
-  { key: 'main', label: '메인', userRecipe: null },
-  { key: 'soup', label: '국/탕', userRecipe: null },
-  { key: 'side', label: '반찬', userRecipe: null },
+const FILTERS = [
+  { key: 'all', label: '전체' },
+  { key: 'korean', label: '한식', cuisine: 'korean' },
+  { key: 'western', label: '양식', cuisine: 'western' },
+  { key: 'chinese', label: '중식', cuisine: 'chinese' },
+  { key: 'japanese', label: '일식', cuisine: 'japanese' },
+  { key: 'southeast_asian', label: '동남아', cuisine: 'southeast_asian' },
+  { key: 'mexican', label: '멕시칸', cuisine: 'mexican' },
   { key: 'custom', label: '커스텀', userRecipe: true },
 ];
 
@@ -18,12 +21,12 @@ function HomePage() {
 
   useEffect(() => {
     setLoading(true);
-    const cat = CATEGORIES.find((c) => (c.key || 'all') === activeFilter);
-    const params = { size: 30 };
-    if (cat && cat.userRecipe) {
+    const filter = FILTERS.find((f) => f.key === activeFilter);
+    const params = { size: 50 };
+    if (filter && filter.userRecipe) {
       params.userRecipe = true;
-    } else if (cat && cat.key) {
-      params.category = cat.key;
+    } else if (filter && filter.cuisine) {
+      params.cuisine = filter.cuisine;
     }
     recipeApi.list(params)
       .then((data) => setRecipes(data.content || []))
@@ -39,13 +42,13 @@ function HomePage() {
       </header>
 
       <div className="category-chips">
-        {CATEGORIES.map((cat) => (
+        {FILTERS.map((f) => (
           <button
-            key={cat.key || 'all'}
-            className={`category-chip ${activeFilter === (cat.key || 'all') ? 'active' : ''}`}
-            onClick={() => setActiveFilter(cat.key || 'all')}
+            key={f.key}
+            className={`category-chip ${activeFilter === f.key ? 'active' : ''}`}
+            onClick={() => setActiveFilter(f.key)}
           >
-            {cat.label}
+            {f.label}
           </button>
         ))}
       </div>

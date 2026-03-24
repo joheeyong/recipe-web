@@ -4,6 +4,7 @@ const recipeApi = {
   list: (params = {}) => {
     const query = new URLSearchParams();
     if (params.category) query.set('category', params.category);
+    if (params.cuisine) query.set('cuisine', params.cuisine);
     if (params.query) query.set('query', params.query);
     if (params.userRecipe !== undefined && params.userRecipe !== null) query.set('userRecipe', params.userRecipe);
     if (params.page !== undefined) query.set('page', params.page);
