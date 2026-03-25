@@ -22,6 +22,45 @@
   color: var(--text-secondary);
 }
 
+/* 맞춤 추천 */
+.recommend-section {
+  margin-bottom: 20px;
+}
+
+.recommend-header {
+  margin-bottom: 12px;
+}
+
+.recommend-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.recommend-desc {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.recommend-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.recommend-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.recommend-card-wrap {
+  flex-shrink: 0;
+  width: 150px;
+}
+
 .category-chips {
   display: flex;
   gap: 8px;

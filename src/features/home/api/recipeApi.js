@@ -16,6 +16,8 @@ const recipeApi = {
   detail: (id) => apiClient.get(`/api/recipes/${id}`),
 
   search: (query) => apiClient.get(`/api/recipes?query=${encodeURIComponent(query)}&size=30`),
+
+  recommendations: (size = 10) => apiClient.get(`/api/recommendations?size=${size}`),
 };
 
 export default recipeApi;

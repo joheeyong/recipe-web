@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
 import './HomePage.css';
@@ -15,9 +16,20 @@ const FILTERS = [
 ];
 
 function HomePage() {
+  const { user } = useSelector((state) => state.auth);
   const [recipes, setRecipes] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
+
+  // 맞춤 추천 로드
+  useEffect(() => {
+    if (!user) { setRecommendations([]); return; }
+    recipeApi.recommendations(10)
+      .then((data) => setRecommendations(Array.isArray(data) ? data : []))
+      .catch(() => setRecommendations([]));
+  }, [user]);
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +52,23 @@ function HomePage() {
         <h1 className="home-title">Recipe</h1>
         <p className="home-subtitle">오늘 뭐 해먹지?</p>
       </header>
+
+      {/* 맞춤 추천 섹션 */}
+      {user && recommendations.length > 0 && (
+        <div className="recommend-section">
+          <div className="recommend-header">
+            <h2 className="recommend-title">맞춤 추천</h2>
+            <p className="recommend-desc">입맛 설정 기반 추천 레시피</p>
+          </div>
+          <div className="recommend-scroll" ref={scrollRef}>
+            {recommendations.map((recipe) => (
+              <div key={recipe.id} className="recommend-card-wrap">
+                <RecipeCard recipe={recipe} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="category-chips">
         {FILTERS.map((f) => (
