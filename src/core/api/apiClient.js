@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 async function request(method, path, body = null) {
   const token = localStorage.getItem('auth_token');

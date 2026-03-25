@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../../core/api/apiClient';
 import './BookmarksPage.css';
 
@@ -8,23 +8,27 @@ const DIFFICULTY_LABEL = ['', '쉬움', '보통', '어려움'];
 
 function BookmarksPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useSelector((state) => state.auth);
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!user) { setLoading(false); return; }
-    apiClient.get('/api/bookmarks')
-      .then((data) => setRecipes(data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [user]);
+  const { data: recipes = [], isLoading } = useQuery({
+    queryKey: ['bookmarks'],
+    queryFn: () => apiClient.get('/api/bookmarks'),
+    enabled: !!user,
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: (id) => apiClient.del(`/api/bookmarks/${id}`),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(['bookmarks'], (old) =>
+        old ? old.filter((r) => r.id !== id) : []
+      );
+    },
+  });
 
   const handleRemove = (e, id) => {
     e.stopPropagation();
-    apiClient.del(`/api/bookmarks/${id}`)
-      .then(() => setRecipes((prev) => prev.filter((r) => r.id !== id)))
-      .catch(() => {});
+    removeMutation.mutate(id);
   };
 
   if (!user) {
@@ -43,7 +47,7 @@ function BookmarksPage() {
     <div className="bookmarks-page">
       <h1 className="bookmarks-title">저장한 레시피</h1>
 
-      {loading ? (
+      {isLoading ? (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <div className="home-spinner" />
         </div>

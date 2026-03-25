@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import './LoginPage.css';
 
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '';
-const NAVER_CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID || '';
-const KAKAO_CLIENT_ID = process.env.REACT_APP_KAKAO_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID || '';
+const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID || '';
 
 function generateState() {
   const array = new Uint8Array(32);

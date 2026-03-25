@@ -13,7 +13,7 @@ function MyRecipesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL || ''}/api/my-recipes/all`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/my-recipes/all`)
       .then((res) => res.json())
       .then((data) => setRecipes(data || []))
       .catch(() => {})

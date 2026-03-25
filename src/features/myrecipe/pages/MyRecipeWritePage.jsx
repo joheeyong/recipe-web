@@ -96,7 +96,7 @@ function MyRecipeWritePage() {
 
       const token = localStorage.getItem('auth_token');
       const res = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL || ''}/api/my-recipes`,
+        `${import.meta.env.VITE_API_BASE_URL || ''}/api/my-recipes`,
         {
           method: 'POST',
           headers: token ? { Authorization: `Bearer ${token}` } : {},

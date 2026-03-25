@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
 import './HomePage.css';
@@ -17,34 +18,27 @@ const FILTERS = [
 
 function HomePage() {
   const { user } = useSelector((state) => state.auth);
-  const [recipes, setRecipes] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
 
-  // 맞춤 추천 로드
-  useEffect(() => {
-    if (!user) { setRecommendations([]); return; }
-    recipeApi.recommendations(10)
-      .then((data) => setRecommendations(Array.isArray(data) ? data : []))
-      .catch(() => setRecommendations([]));
-  }, [user]);
+  const filter = FILTERS.find((f) => f.key === activeFilter);
+  const params = { size: 50 };
+  if (filter?.userRecipe) params.userRecipe = true;
+  else if (filter?.cuisine) params.cuisine = filter.cuisine;
 
-  useEffect(() => {
-    setLoading(true);
-    const filter = FILTERS.find((f) => f.key === activeFilter);
-    const params = { size: 50 };
-    if (filter && filter.userRecipe) {
-      params.userRecipe = true;
-    } else if (filter && filter.cuisine) {
-      params.cuisine = filter.cuisine;
-    }
-    recipeApi.list(params)
-      .then((data) => setRecipes(data.content || []))
-      .catch(() => setRecipes([]))
-      .finally(() => setLoading(false));
-  }, [activeFilter]);
+  const { data: recipePage, isLoading } = useQuery({
+    queryKey: ['recipes', activeFilter],
+    queryFn: () => recipeApi.list(params),
+  });
+
+  const { data: recommendations = [] } = useQuery({
+    queryKey: ['recommendations', user?.id],
+    queryFn: () => recipeApi.recommendations(10),
+    enabled: !!user,
+    select: (data) => (Array.isArray(data) ? data : []),
+  });
+
+  const recipes = recipePage?.content || [];
 
   return (
     <div className="home-page">
@@ -53,7 +47,6 @@ function HomePage() {
         <p className="home-subtitle">오늘 뭐 해먹지?</p>
       </header>
 
-      {/* 맞춤 추천 섹션 */}
       {user && recommendations.length > 0 && (
         <div className="recommend-section">
           <div className="recommend-header">
@@ -82,7 +75,7 @@ function HomePage() {
         ))}
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="home-loading">
           <div className="home-spinner" />
         </div>
