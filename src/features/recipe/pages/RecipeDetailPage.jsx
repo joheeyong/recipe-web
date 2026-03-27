@@ -276,10 +276,15 @@ function BookmarkButton({ recipeId }) {
   );
 }
 
-function scaleAmount(amount, ratio) {
+/**
+ * 인분 스케일링
+ * @param {string} amount - 원래 양 (예: "200g", "1/2큰술", "약간")
+ * @param {number} ratio - 인분 비율 (선택 인분 / 기본 인분)
+ * @param {string} scaleType - "linear" | "sublinear" | "fixed"
+ */
+function scaleAmount(amount, ratio, scaleType = 'linear') {
   if (!amount || ratio === 1) return amount;
-  const qualitative = ['약간', '적당량', '조금', '적당히', '소량', '취향껏', '기호에 맞게'];
-  if (qualitative.some((q) => amount.includes(q))) return amount;
+  if (scaleType === 'fixed') return amount;
 
   // "1/2큰술", "200g", "2.5컵" 등 파싱
   const match = amount.match(/^(\d+\/\d+|\d+\.?\d*)\s*(.*)/);
@@ -295,13 +300,27 @@ function scaleAmount(amount, ratio) {
 
   if (isNaN(num)) return amount;
 
-  const scaled = num * ratio;
+  // 스케일링 공식 적용
+  let effectiveRatio;
+  if (scaleType === 'sublinear') {
+    // 비선형: ratio^0.75 (2배 인분 → 약 1.68배 물)
+    effectiveRatio = Math.pow(ratio, 0.75);
+  } else {
+    effectiveRatio = ratio;
+  }
+
+  const scaled = num * effectiveRatio;
   const unit = match[2];
 
   // 깔끔한 숫자 표시
-  const display = scaled % 1 === 0
-    ? String(scaled)
-    : scaled.toFixed(1).replace(/\.0$/, '');
+  let display;
+  if (scaled >= 100) {
+    display = String(Math.round(scaled));
+  } else if (scaled % 1 === 0) {
+    display = String(scaled);
+  } else {
+    display = scaled.toFixed(1).replace(/\.0$/, '');
+  }
 
   return `${display}${unit}`;
 }
@@ -434,9 +453,15 @@ function RecipeDetailPage() {
                     {ing.adjusted && <span className="ingredient-adjusted-badge">조정됨</span>}
                   </span>
                   <span className="ingredient-measure">
-                    {scaleAmount(ing.amount, servingRatio)}
+                    {scaleAmount(ing.amount, servingRatio, ing.scaleType)}
                     {ing.adjusted && ing.originalAmount && (
-                      <span className="ingredient-original">(원래 {scaleAmount(ing.originalAmount, servingRatio)})</span>
+                      <span className="ingredient-original">(원래 {scaleAmount(ing.originalAmount, servingRatio, ing.scaleType)})</span>
+                    )}
+                    {servingRatio !== 1 && ing.scaleType === 'sublinear' && (
+                      <span className="ingredient-scale-hint">비선형</span>
+                    )}
+                    {servingRatio !== 1 && ing.scaleType === 'fixed' && (
+                      <span className="ingredient-scale-hint">고정</span>
                     )}
                   </span>
                 </li>

@@ -352,6 +352,16 @@
   font-weight: 600;
 }
 
+.ingredient-scale-hint {
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  background: var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
 .ingredient-original {
   font-size: 0.7rem;
   color: var(--text-tertiary);
