@@ -276,15 +276,49 @@ function BookmarkButton({ recipeId }) {
   );
 }
 
+function scaleAmount(amount, ratio) {
+  if (!amount || ratio === 1) return amount;
+  const qualitative = ['약간', '적당량', '조금', '적당히', '소량', '취향껏', '기호에 맞게'];
+  if (qualitative.some((q) => amount.includes(q))) return amount;
+
+  // "1/2큰술", "200g", "2.5컵" 등 파싱
+  const match = amount.match(/^(\d+\/\d+|\d+\.?\d*)\s*(.*)/);
+  if (!match) return amount;
+
+  let num;
+  if (match[1].includes('/')) {
+    const [a, b] = match[1].split('/');
+    num = Number(a) / Number(b);
+  } else {
+    num = Number(match[1]);
+  }
+
+  if (isNaN(num)) return amount;
+
+  const scaled = num * ratio;
+  const unit = match[2];
+
+  // 깔끔한 숫자 표시
+  const display = scaled % 1 === 0
+    ? String(scaled)
+    : scaled.toFixed(1).replace(/\.0$/, '');
+
+  return `${display}${unit}`;
+}
+
 function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [servings, setServings] = useState(null);
 
   useEffect(() => {
     recipeApi.detail(id)
-      .then((res) => setData(res))
+      .then((res) => {
+        setData(res);
+        setServings(res?.recipe?.servingSize || 2);
+      })
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [id]);
@@ -307,6 +341,9 @@ function RecipeDetailPage() {
   }
 
   const { recipe, ingredients, steps, adjustmentNotes, tasteAdjusted } = data;
+  const baseServings = recipe.servingSize || 2;
+  const currentServings = servings || baseServings;
+  const servingRatio = currentServings / baseServings;
 
   return (
     <div className="detail-page">
@@ -348,7 +385,19 @@ function RecipeDetailPage() {
           </div>
           <div className="detail-meta-item">
             <span className="detail-meta-label">인분</span>
-            <span className="detail-meta-value">{recipe.servingSize}인분</span>
+            <div className="serving-selector">
+              <button
+                className="serving-btn"
+                onClick={() => setServings(Math.max(1, currentServings - 1))}
+                disabled={currentServings <= 1}
+              >-</button>
+              <span className="serving-value">{currentServings}</span>
+              <button
+                className="serving-btn"
+                onClick={() => setServings(currentServings + 1)}
+                disabled={currentServings >= 20}
+              >+</button>
+            </div>
           </div>
           {recipe.calories > 0 && (
             <div className="detail-meta-item">
@@ -368,7 +417,14 @@ function RecipeDetailPage() {
 
         {ingredients && ingredients.length > 0 && (
           <section className="detail-section">
-            <h2 className="detail-section-title">재료</h2>
+            <div className="ingredient-header">
+              <h2 className="detail-section-title">재료</h2>
+              {servingRatio !== 1 && (
+                <span className="ingredient-ratio-badge">
+                  {baseServings}인분 기준 x{servingRatio % 1 === 0 ? servingRatio : servingRatio.toFixed(1)}
+                </span>
+              )}
+            </div>
             <ul className="detail-ingredients">
               {ingredients.map((ing) => (
                 <li key={ing.id} className={`detail-ingredient ${ing.optional ? 'optional' : ''} ${ing.adjusted ? 'adjusted' : ''}`}>
@@ -378,9 +434,9 @@ function RecipeDetailPage() {
                     {ing.adjusted && <span className="ingredient-adjusted-badge">조정됨</span>}
                   </span>
                   <span className="ingredient-measure">
-                    {ing.amount}
+                    {scaleAmount(ing.amount, servingRatio)}
                     {ing.adjusted && ing.originalAmount && (
-                      <span className="ingredient-original">(원래 {ing.originalAmount})</span>
+                      <span className="ingredient-original">(원래 {scaleAmount(ing.originalAmount, servingRatio)})</span>
                     )}
                   </span>
                 </li>
