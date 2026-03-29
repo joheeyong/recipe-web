@@ -10,6 +10,8 @@ import HomePage from './features/home/pages/HomePage';
 import RecipeListPage from './features/recipe/pages/RecipeListPage';
 import RecipeDetailPage from './features/recipe/pages/RecipeDetailPage';
 import BookmarksPage from './features/bookmark/pages/BookmarksPage';
+import AllBookmarksPage from './features/bookmark/pages/AllBookmarksPage';
+import CollectionDetailPage from './features/bookmark/pages/CollectionDetailPage';
 import ProfilePage from './features/profile/pages/ProfilePage';
 import MyRecipesPage from './features/myrecipe/pages/MyRecipesPage';
 import MyRecipeWritePage from './features/myrecipe/pages/MyRecipeWritePage';
@@ -45,6 +47,8 @@ function App() {
         <Route path="/blog/write" element={<BlogWritePage />} />
         <Route path="/blog/:id" element={<BlogDetailPage />} />
         <Route path="/bookmarks" element={<BookmarksPage />} />
+        <Route path="/bookmarks/all" element={<AllBookmarksPage />} />
+        <Route path="/collections/:id" element={<CollectionDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
       {showBottomNav && <BottomNav />}

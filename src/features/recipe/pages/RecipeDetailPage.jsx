@@ -248,6 +248,9 @@ function formatDate(dateStr) {
 function BookmarkButton({ recipeId }) {
   const { user } = useSelector((state) => state.auth);
   const [bookmarked, setBookmarked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [collections, setCollections] = useState([]);
+  const [savedInIds, setSavedInIds] = useState([]);
 
   useEffect(() => {
     if (!user) return;
@@ -258,21 +261,85 @@ function BookmarkButton({ recipeId }) {
 
   const toggle = () => {
     if (!user) return;
-    const req = bookmarked
-      ? apiClient.del(`/api/bookmarks/${recipeId}`)
-      : apiClient.post(`/api/bookmarks/${recipeId}`);
-    req.then((data) => setBookmarked(data.bookmarked)).catch(() => {});
+    if (!bookmarked) {
+      // 북마크 추가 + 컬렉션 모달 표시
+      apiClient.post(`/api/bookmarks/${recipeId}`)
+        .then((data) => setBookmarked(data.bookmarked))
+        .catch(() => {});
+      openCollectionModal();
+    } else {
+      // 길게 누르면 컬렉션 모달, 일반 클릭은 북마크 해제
+      apiClient.del(`/api/bookmarks/${recipeId}`)
+        .then((data) => setBookmarked(data.bookmarked))
+        .catch(() => {});
+    }
+  };
+
+  const openCollectionModal = () => {
+    Promise.all([
+      apiClient.get('/api/collections'),
+      apiClient.get(`/api/collections/check/${recipeId}`),
+    ]).then(([cols, check]) => {
+      setCollections(cols);
+      setSavedInIds(check.collectionIds || []);
+      setShowModal(true);
+    }).catch(() => {});
+  };
+
+  const toggleCollection = (colId) => {
+    if (savedInIds.includes(colId)) {
+      apiClient.del(`/api/collections/${colId}/recipes/${recipeId}`).then(() => {
+        setSavedInIds((prev) => prev.filter((id) => id !== colId));
+      }).catch(() => {});
+    } else {
+      apiClient.post(`/api/collections/${colId}/recipes/${recipeId}`).then(() => {
+        setSavedInIds((prev) => [...prev, colId]);
+      }).catch(() => {});
+    }
   };
 
   if (!user) return null;
 
   return (
-    <button className={`detail-bookmark-btn ${bookmarked ? 'active' : ''}`} onClick={toggle}>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill={bookmarked ? 'var(--accent)' : 'none'} stroke={bookmarked ? 'var(--accent)' : 'currentColor'} strokeWidth="2">
-        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-      </svg>
-      <span>{bookmarked ? '저장됨' : '저장'}</span>
-    </button>
+    <>
+      <button className={`detail-bookmark-btn ${bookmarked ? 'active' : ''}`} onClick={toggle}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill={bookmarked ? 'var(--accent)' : 'none'} stroke={bookmarked ? 'var(--accent)' : 'currentColor'} strokeWidth="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+        </svg>
+        <span>{bookmarked ? '저장됨' : '저장'}</span>
+      </button>
+      {bookmarked && (
+        <button className="detail-collection-btn" onClick={openCollectionModal}>
+          컬렉션
+        </button>
+      )}
+      {showModal && (
+        <div className="collection-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="collection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="collection-modal-title">컬렉션에 저장</div>
+            {collections.map((c) => (
+              <div
+                key={c.id}
+                className={`collection-modal-item ${savedInIds.includes(c.id) ? 'selected' : ''}`}
+                onClick={() => toggleCollection(c.id)}
+              >
+                <span className="collection-modal-emoji">{c.emoji}</span>
+                <span className="collection-modal-name">{c.name}</span>
+                {savedInIds.includes(c.id) && <span className="collection-modal-check">✓</span>}
+              </div>
+            ))}
+            {collections.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
+                컬렉션이 없습니다. 저장 탭에서 만들어보세요!
+              </div>
+            )}
+            <button className="collection-modal-close" onClick={() => setShowModal(false)}>
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
