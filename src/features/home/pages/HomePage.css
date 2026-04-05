@@ -75,6 +75,32 @@
   display: none;
 }
 
+.sort-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.sort-chip {
+  padding: 5px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.sort-chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .category-chip {
   flex-shrink: 0;
   padding: 8px 18px;

@@ -16,9 +16,26 @@ const FILTERS = [
   { key: 'custom', label: '커스텀', userRecipe: true },
 ];
 
+const SORTS = [
+  { key: 'default', label: '기본' },
+  { key: 'calories', label: '칼로리순' },
+  { key: 'difficulty', label: '난이도순' },
+  { key: 'time', label: '시간순' },
+];
+
+function sortRecipes(recipes, sortKey) {
+  if (sortKey === 'default') return recipes;
+  const copy = [...recipes];
+  if (sortKey === 'calories') return copy.sort((a, b) => a.calories - b.calories);
+  if (sortKey === 'difficulty') return copy.sort((a, b) => a.difficulty - b.difficulty);
+  if (sortKey === 'time') return copy.sort((a, b) => a.cookTimeMinutes - b.cookTimeMinutes);
+  return copy;
+}
+
 function HomePage() {
   const { user } = useSelector((state) => state.auth);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [activeSort, setActiveSort] = useState('default');
   const scrollRef = useRef(null);
 
   const filter = FILTERS.find((f) => f.key === activeFilter);
@@ -38,7 +55,7 @@ function HomePage() {
     select: (data) => (Array.isArray(data) ? data : []),
   });
 
-  const recipes = recipePage?.content || [];
+  const recipes = sortRecipes(recipePage?.content || [], activeSort);
 
   return (
     <div className="home-page">
@@ -71,6 +88,18 @@ function HomePage() {
             onClick={() => setActiveFilter(f.key)}
           >
             {f.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="sort-bar">
+        {SORTS.map((s) => (
+          <button
+            key={s.key}
+            className={`sort-chip ${activeSort === s.key ? 'active' : ''}`}
+            onClick={() => setActiveSort(s.key)}
+          >
+            {s.label}
           </button>
         ))}
       </div>
