@@ -80,28 +80,27 @@ function HomePage() {
         </div>
       )}
 
-      <div className="category-chips">
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            className={`category-chip ${activeFilter === f.key ? 'active' : ''}`}
-            onClick={() => setActiveFilter(f.key)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="sort-bar">
-        {SORTS.map((s) => (
-          <button
-            key={s.key}
-            className={`sort-chip ${activeSort === s.key ? 'active' : ''}`}
-            onClick={() => setActiveSort(s.key)}
-          >
-            {s.label}
-          </button>
-        ))}
+      <div className="filter-row">
+        <div className="category-chips">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              className={`category-chip ${activeFilter === f.key ? 'active' : ''}`}
+              onClick={() => setActiveFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <select
+          className="sort-select"
+          value={activeSort}
+          onChange={(e) => setActiveSort(e.target.value)}
+        >
+          {SORTS.map((s) => (
+            <option key={s.key} value={s.key}>{s.label}</option>
+          ))}
+        </select>
       </div>
 
       {isLoading ? (

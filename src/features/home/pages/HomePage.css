@@ -75,30 +75,41 @@
   display: none;
 }
 
-.sort-bar {
+.filter-row {
   display: flex;
-  gap: 6px;
-  margin-bottom: 14px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-.sort-chip {
-  padding: 5px 14px;
-  border-radius: 14px;
+.filter-row .category-chips {
+  flex: 1;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sort-select {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border-radius: 20px;
   border: 1.5px solid var(--border);
   background: var(--bg-secondary);
-  font-size: 0.78rem;
-  font-weight: 500;
   color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.15s;
+  font-size: 0.82rem;
+  font-weight: 500;
   font-family: inherit;
-  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 26px;
 }
 
-.sort-chip.active {
+.sort-select:focus {
+  outline: none;
   border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 600;
 }
 
 .category-chip {
