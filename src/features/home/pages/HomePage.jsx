@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
+import RecipeCardSkeleton from '../../../shared/components/RecipeCardSkeleton';
 import './HomePage.css';
 
 const FILTERS = [
@@ -104,8 +105,10 @@ function HomePage() {
       </div>
 
       {isLoading ? (
-        <div className="home-loading">
-          <div className="home-spinner" />
+        <div className="recipe-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <RecipeCardSkeleton key={i} />
+          ))}
         </div>
       ) : recipes.length === 0 ? (
         <div className="home-empty">
