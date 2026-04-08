@@ -32,6 +32,8 @@ function ReviewSection({ recipeId }) {
   const [reviewCount, setReviewCount] = useState(0);
   const [myRating, setMyRating] = useState(0);
   const [myComment, setMyComment] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
@@ -47,6 +49,7 @@ function ReviewSection({ recipeId }) {
           if (mine) {
             setMyRating(mine.rating);
             setMyComment(mine.comment || '');
+            setImagePreview(mine.imageUrl || null);
           }
         }
       })
@@ -55,16 +58,30 @@ function ReviewSection({ recipeId }) {
 
   useEffect(() => { loadReviews(); }, [loadReviews]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleImageRemove = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!myRating) return;
     setSubmitting(true);
-    apiClient.post(`/api/recipes/${recipeId}/reviews`, {
-      rating: myRating,
-      comment: myComment.trim(),
-    })
+    const formData = new FormData();
+    formData.append('rating', myRating);
+    formData.append('comment', myComment.trim());
+    if (imageFile) formData.append('image', imageFile);
+    apiClient.postForm(`/api/recipes/${recipeId}/reviews`, formData)
       .then(() => {
         setEditMode(false);
+        setImageFile(null);
         loadReviews();
       })
       .catch(() => {})
@@ -108,6 +125,19 @@ function ReviewSection({ recipeId }) {
             onChange={(e) => setMyComment(e.target.value)}
             rows={3}
           />
+          <div className="review-image-upload">
+            {imagePreview ? (
+              <div className="review-image-preview">
+                <img src={imagePreview} alt="미리보기" />
+                <button type="button" className="review-image-remove" onClick={handleImageRemove}>✕</button>
+              </div>
+            ) : (
+              <label className="review-image-label">
+                <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+                <span>+ 사진 추가</span>
+              </label>
+            )}
+          </div>
           <div className="review-form-actions">
             {editMode && (
               <button type="button" className="review-cancel-btn" onClick={() => setEditMode(false)}>
@@ -142,6 +172,7 @@ function ReviewSection({ recipeId }) {
             </div>
           </div>
           {myReview.comment && <p className="review-comment">{myReview.comment}</p>}
+          {myReview.imageUrl && <img src={myReview.imageUrl} alt="리뷰 사진" className="review-image" />}
           <span className="review-date">{formatDate(myReview.createdAt)}</span>
         </div>
       )}
@@ -163,6 +194,7 @@ function ReviewSection({ recipeId }) {
             </div>
           </div>
           {review.comment && <p className="review-comment">{review.comment}</p>}
+          {review.imageUrl && <img src={review.imageUrl} alt="리뷰 사진" className="review-image" />}
           <span className="review-date">{formatDate(review.createdAt)}</span>
         </div>
       ))}
