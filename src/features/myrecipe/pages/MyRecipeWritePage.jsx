@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import './MyRecipeWritePage.css';
 
@@ -23,6 +23,8 @@ const SPICY_LEVELS = [
 
 function MyRecipeWritePage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEdit = !!id;
   const { user } = useSelector((state) => state.auth);
   const imageInputRef = useRef(null);
 
@@ -40,6 +42,37 @@ function MyRecipeWritePage() {
   const [ingredients, setIngredients] = useState([{ name: '', amount: '' }]);
   const [steps, setSteps] = useState([{ instruction: '', tip: '' }]);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(isEdit);
+
+  useEffect(() => {
+    if (!isEdit) return;
+    const token = localStorage.getItem('auth_token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/recipes/${id}`, { headers })
+      .then((res) => res.json())
+      .then((data) => {
+        const r = data.recipe;
+        if (!r) return;
+        setTitle(r.title || '');
+        setDescription(r.description || '');
+        setCategory(r.category || 'main');
+        setDifficulty(r.difficulty || 2);
+        setCookTime(r.cookTimeMinutes ? String(r.cookTimeMinutes) : '');
+        setServingSize(r.servingSize ? String(r.servingSize) : '2');
+        setCalories(r.calories ? String(r.calories) : '');
+        setSpicyLevel(r.spicyLevel || 0);
+        setTags(r.tags || '');
+        if (r.imageUrl) setImagePreview(r.imageUrl);
+        if (data.ingredients?.length) {
+          setIngredients(data.ingredients.map((i) => ({ name: i.name, amount: i.amount || '' })));
+        }
+        if (data.steps?.length) {
+          setSteps(data.steps.map((s) => ({ instruction: s.instruction, tip: s.tip || '' })));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [id, isEdit]);
 
   if (!user) {
     navigate('/login');
@@ -95,24 +128,34 @@ function MyRecipeWritePage() {
       });
 
       const token = localStorage.getItem('auth_token');
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || ''}/api/my-recipes`,
-        {
-          method: 'POST',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          body: formData,
-        }
-      );
+      const url = isEdit
+        ? `${import.meta.env.VITE_API_BASE_URL || ''}/api/my-recipes/${id}`
+        : `${import.meta.env.VITE_API_BASE_URL || ''}/api/my-recipes`;
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
 
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
       navigate(`/recipes/${data.id}`);
     } catch {
-      alert('등록에 실패했습니다');
+      alert(isEdit ? '수정에 실패했습니다' : '등록에 실패했습니다');
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
+        <div className="rw-spinner" />
+      </div>
+    );
+  }
 
   return (
     <div className="recipe-write-page">
@@ -122,7 +165,7 @@ function MyRecipeWritePage() {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 className="recipe-write-title">유저 레시피 등록</h1>
+        <h1 className="recipe-write-title">{isEdit ? '레시피 수정' : '유저 레시피 등록'}</h1>
       </div>
 
       <form className="recipe-write-form" onSubmit={handleSubmit}>
@@ -245,7 +288,7 @@ function MyRecipeWritePage() {
         </div>
 
         <button type="submit" className="rw-submit-btn" disabled={!title.trim() || submitting}>
-          {submitting ? '등록 중...' : '레시피 등록'}
+          {submitting ? (isEdit ? '수정 중...' : '등록 중...') : (isEdit ? '레시피 수정' : '레시피 등록')}
         </button>
       </form>
     </div>

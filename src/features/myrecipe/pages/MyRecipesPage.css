@@ -128,15 +128,32 @@
   font-weight: 500;
 }
 
-.myrecipe-delete-btn {
+.myrecipe-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   align-self: flex-start;
+}
+
+.myrecipe-edit-btn,
+.myrecipe-delete-btn {
   background: none;
   border: none;
-  color: var(--text-tertiary);
   font-size: 0.7rem;
   cursor: pointer;
-  padding: 4px;
+  padding: 4px 6px;
+  border-radius: 6px;
   font-family: inherit;
+  white-space: nowrap;
+}
+
+.myrecipe-edit-btn {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.myrecipe-delete-btn {
+  color: var(--text-tertiary);
 }
 
 .myrecipe-login-hint {

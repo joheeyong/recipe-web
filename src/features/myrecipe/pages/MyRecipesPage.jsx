@@ -72,7 +72,10 @@ function MyRecipesPage() {
                 </div>
               </div>
               {user && user.id === r.userId && (
-                <button className="myrecipe-delete-btn" onClick={(e) => handleDelete(e, r.id)}>삭제</button>
+                <div className="myrecipe-item-actions">
+                  <button className="myrecipe-edit-btn" onClick={(e) => { e.stopPropagation(); navigate(`/my-recipes/edit/${r.id}`); }}>수정</button>
+                  <button className="myrecipe-delete-btn" onClick={(e) => handleDelete(e, r.id)}>삭제</button>
+                </div>
               )}
             </div>
           ))}
