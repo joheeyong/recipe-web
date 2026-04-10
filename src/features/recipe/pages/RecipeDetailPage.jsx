@@ -36,6 +36,7 @@ function ReviewSection({ recipeId }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [viewerSrc, setViewerSrc] = useState(null);
 
   const loadReviews = useCallback(() => {
     apiClient.get(`/api/recipes/${recipeId}/reviews`)
@@ -172,7 +173,7 @@ function ReviewSection({ recipeId }) {
             </div>
           </div>
           {myReview.comment && <p className="review-comment">{myReview.comment}</p>}
-          {myReview.imageUrl && <img src={myReview.imageUrl} alt="리뷰 사진" className="review-image" />}
+          {myReview.imageUrl && <img src={myReview.imageUrl} alt="리뷰 사진" className="review-image review-image-clickable" onClick={() => setViewerSrc(myReview.imageUrl)} />}
           <span className="review-date">{formatDate(myReview.createdAt)}</span>
         </div>
       )}
@@ -194,7 +195,7 @@ function ReviewSection({ recipeId }) {
             </div>
           </div>
           {review.comment && <p className="review-comment">{review.comment}</p>}
-          {review.imageUrl && <img src={review.imageUrl} alt="리뷰 사진" className="review-image" />}
+          {review.imageUrl && <img src={review.imageUrl} alt="리뷰 사진" className="review-image review-image-clickable" onClick={() => setViewerSrc(review.imageUrl)} />}
           <span className="review-date">{formatDate(review.createdAt)}</span>
         </div>
       ))}
@@ -205,6 +206,13 @@ function ReviewSection({ recipeId }) {
 
       {!user && (
         <p className="review-login-hint">후기를 작성하려면 로그인해주세요</p>
+      )}
+
+      {viewerSrc && (
+        <div className="review-viewer-overlay" onClick={() => setViewerSrc(null)}>
+          <button className="review-viewer-close" onClick={() => setViewerSrc(null)}>✕</button>
+          <img src={viewerSrc} alt="리뷰 사진" className="review-viewer-img" onClick={(e) => e.stopPropagation()} />
+        </div>
       )}
     </section>
   );
