@@ -25,6 +25,12 @@
     <title>Recipe — 맞춤 레시피 추천</title>
   </head>
   <body>
+    <script>
+      (function() {
+        var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
   </body>
