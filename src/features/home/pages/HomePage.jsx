@@ -25,6 +25,20 @@ const SORTS = [
   { key: 'time', label: '시간순' },
 ];
 
+const DIFFICULTY_FILTERS = [
+  { key: null, label: '전체' },
+  { key: 1, label: '쉬움' },
+  { key: 2, label: '보통' },
+  { key: 3, label: '어려움' },
+];
+
+const CALORIE_FILTERS = [
+  { key: null, label: '전체' },
+  { key: 300, label: '~300kcal' },
+  { key: 500, label: '~500kcal' },
+  { key: 800, label: '~800kcal' },
+];
+
 function sortRecipes(recipes, sortKey) {
   if (sortKey === 'default') return recipes;
   const copy = [...recipes];
@@ -39,6 +53,8 @@ function HomePage() {
   const { theme, toggle } = useTheme();
   const [activeFilter, setActiveFilter] = useState('all');
   const [activeSort, setActiveSort] = useState('default');
+  const [difficultyFilter, setDifficultyFilter] = useState(null);
+  const [calorieFilter, setCalorieFilter] = useState(null);
   const scrollRef = useRef(null);
 
   const filter = FILTERS.find((f) => f.key === activeFilter);
@@ -58,7 +74,9 @@ function HomePage() {
     select: (data) => (Array.isArray(data) ? data : []),
   });
 
-  const recipes = sortRecipes(recipePage?.content || [], activeSort);
+  const recipes = sortRecipes(recipePage?.content || [], activeSort)
+    .filter((r) => difficultyFilter === null || r.difficulty === difficultyFilter)
+    .filter((r) => calorieFilter === null || r.calories <= calorieFilter);
 
   return (
     <div className="home-page">
@@ -121,6 +139,33 @@ function HomePage() {
             <option key={s.key} value={s.key}>{s.label}</option>
           ))}
         </select>
+      </div>
+
+      <div className="sub-filter-row">
+        <div className="sub-filter-group">
+          <span className="sub-filter-label">난이도</span>
+          {DIFFICULTY_FILTERS.map((f) => (
+            <button
+              key={String(f.key)}
+              className={`sub-filter-chip ${difficultyFilter === f.key ? 'active' : ''}`}
+              onClick={() => setDifficultyFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div className="sub-filter-group">
+          <span className="sub-filter-label">칼로리</span>
+          {CALORIE_FILTERS.map((f) => (
+            <button
+              key={String(f.key)}
+              className={`sub-filter-chip ${calorieFilter === f.key ? 'active' : ''}`}
+              onClick={() => setCalorieFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
