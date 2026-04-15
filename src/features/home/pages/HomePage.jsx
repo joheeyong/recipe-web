@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import recipeApi from '../api/recipeApi';
@@ -51,11 +52,22 @@ function sortRecipes(recipes, sortKey) {
 function HomePage() {
   const { user } = useSelector((state) => state.auth);
   const { theme, toggle } = useTheme();
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [activeSort, setActiveSort] = useState('default');
-  const [difficultyFilter, setDifficultyFilter] = useState(null);
-  const [calorieFilter, setCalorieFilter] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const scrollRef = useRef(null);
+
+  const activeFilter = searchParams.get('cuisine') || 'all';
+  const activeSort = searchParams.get('sort') || 'default';
+  const difficultyFilter = searchParams.get('difficulty') ? Number(searchParams.get('difficulty')) : null;
+  const calorieFilter = searchParams.get('calories') ? Number(searchParams.get('calories')) : null;
+
+  const setParam = (key, value) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (!value || value === 'default' || value === 'all') next.delete(key);
+      else next.set(key, value);
+      return next;
+    }, { replace: true });
+  };
 
   const filter = FILTERS.find((f) => f.key === activeFilter);
   const params = { size: 50 };
@@ -124,7 +136,7 @@ function HomePage() {
             <button
               key={f.key}
               className={`category-chip ${activeFilter === f.key ? 'active' : ''}`}
-              onClick={() => setActiveFilter(f.key)}
+              onClick={() => setParam('cuisine', f.key)}
             >
               {f.label}
             </button>
@@ -133,7 +145,7 @@ function HomePage() {
         <select
           className="sort-select"
           value={activeSort}
-          onChange={(e) => setActiveSort(e.target.value)}
+          onChange={(e) => setParam('sort', e.target.value)}
         >
           {SORTS.map((s) => (
             <option key={s.key} value={s.key}>{s.label}</option>
@@ -148,7 +160,7 @@ function HomePage() {
             <button
               key={String(f.key)}
               className={`sub-filter-chip ${difficultyFilter === f.key ? 'active' : ''}`}
-              onClick={() => setDifficultyFilter(f.key)}
+              onClick={() => setParam('difficulty', f.key)}
             >
               {f.label}
             </button>
@@ -160,7 +172,7 @@ function HomePage() {
             <button
               key={String(f.key)}
               className={`sub-filter-chip ${calorieFilter === f.key ? 'active' : ''}`}
-              onClick={() => setCalorieFilter(f.key)}
+              onClick={() => setParam('calories', f.key)}
             >
               {f.label}
             </button>
