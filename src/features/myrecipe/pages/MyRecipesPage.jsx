@@ -6,6 +6,19 @@ import './MyRecipesPage.css';
 
 const DIFFICULTY_LABEL = ['', '쉬움', '보통', '어려움'];
 
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const raw = dateStr.includes('+') || dateStr.includes('Z') ? dateStr : dateStr + '+09:00';
+  const d = new Date(raw);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '방금 전';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}분 전`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간 전`;
+  if (diff < 604800000) return `${Math.floor(diff / 86400000)}일 전`;
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+}
+
 function MyRecipesPage() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -69,6 +82,12 @@ function MyRecipesPage() {
                 <div className="myrecipe-item-meta">
                   {r.cookTimeMinutes > 0 && <span className="myrecipe-item-tag">{r.cookTimeMinutes}분</span>}
                   {r.difficulty > 0 && <span className="myrecipe-item-tag">{DIFFICULTY_LABEL[r.difficulty]}</span>}
+                </div>
+                <div className="myrecipe-item-dates">
+                  <span>등록 {formatDate(r.createdAt)}</span>
+                  {r.updatedAt && r.updatedAt !== r.createdAt && (
+                    <span className="myrecipe-item-updated">· 수정 {formatDate(r.updatedAt)}</span>
+                  )}
                 </div>
               </div>
               {user && user.id === r.userId && (

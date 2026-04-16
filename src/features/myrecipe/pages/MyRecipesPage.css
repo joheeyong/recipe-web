@@ -128,6 +128,16 @@
   font-weight: 500;
 }
 
+.myrecipe-item-dates {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.myrecipe-item-updated {
+  color: var(--accent);
+}
+
 .myrecipe-item-actions {
   display: flex;
   flex-direction: column;
