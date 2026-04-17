@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { useSearchParams, useNavigationType } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import recipeApi from '../api/recipeApi';
@@ -49,10 +49,13 @@ function sortRecipes(recipes, sortKey) {
   return copy;
 }
 
+const SCROLL_KEY = 'home-scroll';
+
 function HomePage() {
   const { user } = useSelector((state) => state.auth);
   const { theme, toggle } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigationType = useNavigationType();
   const scrollRef = useRef(null);
 
   const activeFilter = searchParams.get('cuisine') || 'all';
@@ -89,6 +92,24 @@ function HomePage() {
   const recipes = sortRecipes(recipePage?.content || [], activeSort)
     .filter((r) => difficultyFilter === null || r.difficulty === difficultyFilter)
     .filter((r) => calorieFilter === null || r.calories <= calorieFilter);
+
+  // 페이지 떠날 때 스크롤 위치 저장
+  useEffect(() => {
+    return () => {
+      sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+    };
+  }, []);
+
+  // 뒤로가기(POP)로 돌아왔을 때 로딩 완료 후 스크롤 복원
+  useEffect(() => {
+    if (navigationType === 'POP' && !isLoading) {
+      const saved = sessionStorage.getItem(SCROLL_KEY);
+      if (saved) {
+        requestAnimationFrame(() => window.scrollTo(0, Number(saved)));
+        sessionStorage.removeItem(SCROLL_KEY);
+      }
+    }
+  }, [navigationType, isLoading]);
 
   return (
     <div className="home-page">
