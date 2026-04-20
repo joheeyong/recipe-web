@@ -1,12 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigationType } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import recipeApi from '../api/recipeApi';
 import RecipeCard from '../../../shared/components/RecipeCard';
 import RecipeCardSkeleton from '../../../shared/components/RecipeCardSkeleton';
 import { useTheme } from '../../../hooks/useTheme';
 import './HomePage.css';
+
+const PAGE_SIZE = 12;
 
 const FILTERS = [
   { key: 'all', label: '전체' },
@@ -57,6 +59,7 @@ function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigationType = useNavigationType();
   const scrollRef = useRef(null);
+  const sentinelRef = useRef(null);
 
   const activeFilter = searchParams.get('cuisine') || 'all';
   const activeSort = searchParams.get('sort') || 'default';
@@ -73,13 +76,23 @@ function HomePage() {
   };
 
   const filter = FILTERS.find((f) => f.key === activeFilter);
-  const params = { size: 50 };
-  if (filter?.userRecipe) params.userRecipe = true;
-  else if (filter?.cuisine) params.cuisine = filter.cuisine;
 
-  const { data: recipePage, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ['recipes', activeFilter],
-    queryFn: () => recipeApi.list(params),
+    queryFn: ({ pageParam = 0 }) => {
+      const params = { size: PAGE_SIZE, page: pageParam };
+      if (filter?.userRecipe) params.userRecipe = true;
+      else if (filter?.cuisine) params.cuisine = filter.cuisine;
+      return recipeApi.list(params);
+    },
+    getNextPageParam: (lastPage) =>
+      lastPage.last ? undefined : lastPage.number + 1,
   });
 
   const { data: recommendations = [] } = useQuery({
@@ -89,9 +102,28 @@ function HomePage() {
     select: (data) => (Array.isArray(data) ? data : []),
   });
 
-  const recipes = sortRecipes(recipePage?.content || [], activeSort)
+  // 모든 페이지 합산 후 클라이언트 필터/정렬 적용
+  const allRecipes = sortRecipes(
+    (data?.pages ?? []).flatMap((p) => p.content ?? []),
+    activeSort
+  )
     .filter((r) => difficultyFilter === null || r.difficulty === difficultyFilter)
     .filter((r) => calorieFilter === null || r.calories <= calorieFilter);
+
+  // sentinel 감지 → 다음 페이지 로드
+  const onIntersect = useCallback((entries) => {
+    if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(onIntersect, { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onIntersect]);
 
   // 페이지 떠날 때 스크롤 위치 저장
   useEffect(() => {
@@ -207,16 +239,27 @@ function HomePage() {
             <RecipeCardSkeleton key={i} />
           ))}
         </div>
-      ) : recipes.length === 0 ? (
+      ) : allRecipes.length === 0 ? (
         <div className="home-empty">
           <p>레시피가 없습니다</p>
         </div>
       ) : (
-        <div className="recipe-grid">
-          {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </div>
+        <>
+          <div className="recipe-grid">
+            {allRecipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+          <div ref={sentinelRef} className="infinite-sentinel">
+            {isFetchingNextPage && (
+              <div className="recipe-grid">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <RecipeCardSkeleton key={i} />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
