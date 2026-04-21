@@ -104,6 +104,25 @@
   font-weight: 300;
 }
 
+.profile-menu-badge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-menu-badge + .profile-menu-arrow {
+  margin-left: 8px;
+}
+
 .profile-logout-btn {
   width: 100%;
   padding: 14px;

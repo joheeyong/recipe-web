@@ -1,9 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useNotifications } from '../../hooks/useNotifications';
 import './BottomNav.css';
 
 function BottomNav() {
   const { user } = useSelector((state) => state.auth);
+  const { unreadCount } = useNotifications();
 
   return (
     <nav className="bottom-nav">
@@ -33,10 +35,15 @@ function BottomNav() {
         <span>저장</span>
       </NavLink>
       <NavLink to={user ? '/profile' : '/login'} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
+        <div className="nav-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          {user && unreadCount > 0 && (
+            <span className="nav-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+          )}
+        </div>
         <span>{user ? '마이' : '로그인'}</span>
       </NavLink>
     </nav>

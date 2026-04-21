@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { logout } from '../../auth/slice/authSlice';
+import { useNotifications } from '../../../hooks/useNotifications';
 import './ProfilePage.css';
 
 function ProfilePage() {
@@ -12,6 +13,8 @@ function ProfilePage() {
   useEffect(() => {
     if (!user) navigate('/login');
   }, [user, navigate]);
+
+  const { unreadCount } = useNotifications();
 
   if (!user) return null;
 
@@ -47,6 +50,20 @@ function ProfilePage() {
         )}
 
         <div className="profile-menu">
+          <div className="profile-menu-item" onClick={() => navigate('/notifications')}>
+            <span className="profile-menu-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </span>
+            <span>알림</span>
+            {unreadCount > 0 && (
+              <span className="profile-menu-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+            <span className="profile-menu-arrow">&rsaquo;</span>
+          </div>
+
           <div className="profile-menu-item" onClick={() => navigate('/onboarding')}>
             <span className="profile-menu-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

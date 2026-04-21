@@ -17,6 +17,7 @@ import MyRecipesPage from './features/myrecipe/pages/MyRecipesPage';
 import MyRecipeWritePage from './features/myrecipe/pages/MyRecipeWritePage';
 import BlogWritePage from './features/blog/pages/BlogWritePage';
 import BlogDetailPage from './features/blog/pages/BlogDetailPage';
+import NotificationsPage from './features/notifications/pages/NotificationsPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -51,6 +52,7 @@ function App() {
         <Route path="/bookmarks/all" element={<AllBookmarksPage />} />
         <Route path="/collections/:id" element={<CollectionDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
       {showBottomNav && <BottomNav />}
     </div>
