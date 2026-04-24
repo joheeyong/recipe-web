@@ -762,9 +762,41 @@
   backdrop-filter: blur(4px);
 }
 
+.review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
 .review-date {
   font-size: 0.7rem;
   color: var(--text-tertiary);
+}
+
+.review-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.review-like-btn:active {
+  transform: scale(0.93);
+}
+
+.review-like-btn.liked {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
 }
 
 .review-empty {

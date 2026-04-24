@@ -100,6 +100,16 @@ function ReviewSection({ recipeId }) {
       .catch(() => {});
   };
 
+  const handleLike = (reviewId) => {
+    if (!user) return;
+    setReviews((prev) => prev.map((r) => {
+      if (r.id !== reviewId) return r;
+      const liked = !r.likedByMe;
+      return { ...r, likedByMe: liked, likeCount: r.likeCount + (liked ? 1 : -1) };
+    }));
+    apiClient.post(`/api/recipes/${recipeId}/reviews/${reviewId}/like`).catch(() => loadReviews());
+  };
+
   const myReview = user ? reviews.find((r) => r.userId === user.id) : null;
 
   return (
@@ -174,7 +184,12 @@ function ReviewSection({ recipeId }) {
           </div>
           {myReview.comment && <p className="review-comment">{myReview.comment}</p>}
           {myReview.imageUrl && <img src={myReview.imageUrl} alt="리뷰 사진" className="review-image review-image-clickable" onClick={() => setViewerSrc(myReview.imageUrl)} />}
-          <span className="review-date">{formatDate(myReview.createdAt)}</span>
+          <div className="review-footer">
+            <span className="review-date">{formatDate(myReview.createdAt)}</span>
+            <button className={`review-like-btn${myReview.likedByMe ? ' liked' : ''}`} onClick={() => handleLike(myReview.id)}>
+              👍 {myReview.likeCount > 0 && <span>{myReview.likeCount}</span>}
+            </button>
+          </div>
         </div>
       )}
 
@@ -196,7 +211,12 @@ function ReviewSection({ recipeId }) {
           </div>
           {review.comment && <p className="review-comment">{review.comment}</p>}
           {review.imageUrl && <img src={review.imageUrl} alt="리뷰 사진" className="review-image review-image-clickable" onClick={() => setViewerSrc(review.imageUrl)} />}
-          <span className="review-date">{formatDate(review.createdAt)}</span>
+          <div className="review-footer">
+            <span className="review-date">{formatDate(review.createdAt)}</span>
+            <button className={`review-like-btn${review.likedByMe ? ' liked' : ''}`} onClick={() => handleLike(review.id)}>
+              👍 {review.likeCount > 0 && <span>{review.likeCount}</span>}
+            </button>
+          </div>
         </div>
       ))}
 
